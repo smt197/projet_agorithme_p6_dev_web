@@ -1,0 +1,3 @@
+1 thiam serigne dev1-p6
+2 diop fatou dev2-p6
+3 fall astou dev3-p6
