@@ -67,7 +67,7 @@ Utilisateur saisirIdentifiant() {
         printf("Entrer votre username : ");
         scanf("%s", utilisateur.username);
         if (strlen(utilisateur.username) == 0) {
-            printf("Le nom d'utilisateur ne peut pas être vide.\n");
+            printf("Le nom d'utilisateur ne peut pas être vide!!.\n");
         }
     } while (strlen(utilisateur.username) == 0);
 
