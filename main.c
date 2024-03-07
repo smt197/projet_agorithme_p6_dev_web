@@ -2,7 +2,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include <termios.h>
+// #include <conio.h>
 #include <unistd.h>
+#include <time.h>
 #include "fonctions.h" 
 
 
@@ -57,6 +59,43 @@
 int main() {
     Utilisateur utilisateur;
     saisirIdentifiant(utilisateur);
+
+
+
+
+
+
+
+
+    // Student students[MAX_STUDENTS];
+    // int numStudents = 0;
+    // FILE *inputFile;
+    // char filename[100];
+
+    // // Ouvrir le fichier d'entrée en lecture
+    // printf("Entrez le nom du fichier contenant la liste des étudiants : ");
+    // scanf("%s", filename);
+    // inputFile = fopen(filename, "r");
+    // if (inputFile == NULL) {
+    //     printf("Impossible d'ouvrir le fichier %s.\n", filename);
+    //     return 1;
+    // }
+
+    // // Lire les informations des étudiants depuis le fichier
+    // while (fscanf(inputFile, "%s %s %s", students[numStudents].code, students[numStudents].name, students[numStudents].class) == 3 && numStudents < MAX_STUDENTS) {
+    //     students[numStudents].present = 0;
+    //     numStudents++;
+    // }
+
+    // // Fermer le fichier d'entrée
+    // fclose(inputFile);
+
+    // // Marquer la présence des étudiants
+    // markAttendance(students, numStudents);
+
+    // // Enregistrer la liste des présences dans un fichier
+    // saveAttendanceToFile(students, numStudents);
+
     return 0;
 }
 

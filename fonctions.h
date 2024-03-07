@@ -8,6 +8,12 @@
 #define MAX_ETUDIANTS 100
 #define MAX_FILENAME_LENGTH 100
 
+#define MAX_STUDENTS 100
+#define MAX_CODE_LENGTH 10
+#define MAX_NAME_LENGTH 50
+#define MAX_CLASS_LENGTH 20
+
+
 // Déclaration des prototypes des fonctions
 
 typedef struct {
@@ -21,6 +27,7 @@ typedef struct
     char nom[50];
     char prenom[50];
     char matricule[10];
+    int present;
 }APPRENANT;
 
 typedef struct 
@@ -33,19 +40,31 @@ typedef struct
 {
     CLASSE cl;
     APPRENANT ap;
-    char jour[10];
+    char date[10];
+    int statut;
 
 }PRESENCE;
 
-
+typedef struct {
+    char code[MAX_CODE_LENGTH];
+    char name[MAX_NAME_LENGTH];
+    char class[MAX_CLASS_LENGTH];
+    int present;
+    time_t heure;
+} Student;
 
 
 
 Utilisateur saisirIdentifiant();
 bool verifierIdentifiants(Utilisateur *utilisateur);
 void menuAdmin();
+void menuGestion();
 void menuUtilisateur();
-void masquerMotDePasse(char *motDePasse);
+int isStudentPresent(Student students[], int numStudents, const char *code);
+// void masquerMotDePasse(char *motDePasse);
+void markAttendance(Student students[], int numStudents);
+void saveAttendanceToFile(Student students[], int numStudents);
+void traitement();
 
 
 #endif 

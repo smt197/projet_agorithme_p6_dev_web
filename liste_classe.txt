@@ -1,3 +1,0 @@
-devweb
-devdata
-refdig
