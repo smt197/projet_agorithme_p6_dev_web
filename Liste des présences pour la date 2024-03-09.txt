@@ -1,0 +1,14 @@
+Liste des présences pour la date 2024-03-09 :
++-------+------------------+------------------+------------------+
+| Code  | Nom              | Prénom           | Classe           |
++-------+------------------+------------------+------------------+
+| 4545  | mbacke           | cheikhouna       | Ref_Dig          |
+| 1213  | ka               | fatou            | Ref_Dig          |
+| 9999  | saleh            | amine            | Ref_Dig          |
+| 2324  | diop             | babacar          | Dev_Data         |
+| 8989  | gueye            | moussa           | Ref_Dig          |
+| 1105  | osho             | castro           | Dev_Data         |
+| 1234  | thiam            | fallou           | Dev_Web          |
+| 2222  | sy               | ngone            | Dev_Data         |
+| 5050  | fall             | awa              | Dev_Web          |
++-------+------------------+------------------+------------------+
