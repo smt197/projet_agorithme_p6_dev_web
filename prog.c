@@ -34,23 +34,24 @@ int afficheMenuAdmin()
         printf("\n");
         printf("        MENU Admin       \n");
         printf("-------------------------------------\n");
-        printf(" 1. GESTION DES ETUDIANTS           \n");
+        printf(" 1. Generer fichier retard         \n");
         printf(" 2. Generation de fichiers      \n");
         printf(" 3. MARQUER LES PRESENCES           \n");
         printf(" 4. ENVOYER UN MESSAGE              \n");
-        printf(" 5. QUITTER                         \n");
+        printf(" 5. Generer liste Absence             \n");
+        printf(" 6. QUITTER                         \n");
         printf("\n");
         printf("Votre choix : ");
         scanf("%d", &choix);
-        if (!(choix >= 1 && choix <= 5)) {
+        if (!(choix >= 1 && choix <= 6)) {
             printf("Choix invalide. Veuillez choisir entre 1 et 5.\n");
         }
-    } while (!(choix >= 1 && choix <= 5));
+    } while (!(choix >= 1 && choix <= 6));
 
     return choix;
 }
 
-int afficheMenuApprenant()
+int afficheMenuApprenant(int nbr_mess)
 {
     int choix;
     do {
@@ -59,7 +60,8 @@ int afficheMenuApprenant()
         printf("        MENU Apprenant             \n");
         printf("1. MARQUER MA PRESENCE             \n");
         printf(" 2. NOMBRE DE MINUTES D'ABSENCES    \n");
-        printf(" 3. MES MESSAGES                    \n");
+        // int nbr_mess = incrementMessageCount();
+        printf(" 3. MES MESSAGES(%d)                   \n", nbr_mess);
         printf("4. QUITTER                         \n");                                                              
         printf("------------------------------------\n");
         printf("\n");
@@ -262,6 +264,13 @@ void marquerPresenceAdmin() {
             char date[20];
             time_t maintenant = time(NULL);
             struct tm *tm_maintenant = localtime(&maintenant);
+
+            // Vérifier si l'heure actuelle est après 16h
+            if (tm_maintenant->tm_hour >= 16) {
+                printf("Il est déjà 16h passé. Vous ne pouvez plus marquer la présence après cette heure.\n");
+            break; // Sortir de la boucle
+            }
+
             strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", tm_maintenant);
 
             int dejaPresent = 0;
@@ -320,6 +329,14 @@ void marquerPresenceApprenant()
             char date[20];
             time_t maintenant = time(NULL);
             struct tm *tm_maintenant = localtime(&maintenant);
+
+                // Vérifier si l'heure actuelle est après 16h
+            if (tm_maintenant->tm_hour >= 16) {
+                printf("Il est déjà 16h passé. Vous ne pouvez plus marquer ta presence.\n");
+                  
+            }
+           
+
             strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", tm_maintenant);
 
             int dejaPresent = 0;
@@ -439,7 +456,7 @@ void genererFichierPresences()
             }
             fprintf(fichierSortie, "Date: %s\n", presences[i].date);
             fprintf(fichierSortie, "-------------------------------------------------------------\n");
-            fprintf(fichierSortie, "| Code  | Nom              | Prénom           | Classe           |\n");
+            fprintf(fichierSortie, "| Code  | Nom              | Prénom                     |\n");
             fprintf(fichierSortie, "-------------------------------------------------------------\n");
             strcpy(datePrecedente, presences[i].date);
         }
@@ -519,7 +536,7 @@ void listePresencesParDate()
 
         fprintf(fichierSortie, "Liste des présences pour la date %s :\n", dateRecherchee);
         fprintf(fichierSortie, "-------------------------------------------------------------\n");
-        fprintf(fichierSortie, "| Code  | Nom              | Prénom           | Classe           |\n");
+        fprintf(fichierSortie, "| Code  | Nom              | Prénom                   |\n");
         fprintf(fichierSortie, "-------------------------------------------------------------\n");
 
         char ligne[TAILLE_MAX];
@@ -551,7 +568,7 @@ void listePresencesParDate()
                     char nomEtudiant[TAILLE_MAX];
                     char classeEtudiant[TAILLE_MAX];
 
-                    if (sscanf(ligne, "%d %s %s %s", &codeEtudiant, prenomEtudiant, nomEtudiant, classeEtudiant) != 4)
+                    if (sscanf(ligne, "%d %s %s", &codeEtudiant, prenomEtudiant, nomEtudiant) != 3)
                     {
                         continue;
                     }
@@ -565,7 +582,7 @@ void listePresencesParDate()
 
                 fclose(fichierEtudiants);
 
-                fprintf(fichierSortie, "| %-5d | %-16s | %-16s | %-16s |\n", code, nom, prenom, classe);
+                fprintf(fichierSortie, "| %-5d | %-16s | %-16s |\n", code, nom, prenom);
             }
         }
 
@@ -620,14 +637,15 @@ void lireMessageApprenants() {
     }
 
     char ligne[TAILLE_MAX];
-    int nbMessages = 0;
+    int nbr_mess = 0;
+    
 
-    printf("Nombre de messages: %d\n", nbMessages);
+    
     while (fgets(ligne, TAILLE_MAX, fichierMessage) != NULL) {
-        nbMessages++;
+        nbr_mess++;
         printf("%s", ligne);
     }
-
+    printf("Nombre de messages: (%d)\n", nbr_mess);
 
     fclose(fichierMessage);
 }
@@ -636,16 +654,21 @@ void lireMessageApprenants() {
 
 // Fonction pour saisir un message et la classe des destinataires
 Message saisirMessage() {
+    // char reponses;
     Message message;
     printf("Entrez le message à envoyer : ");
+    // getchar();
     scanf("%s", message.message);
+    
     printf("Entrez la classe des destinataires : ");
+    
     scanf("%s", message.classe);
+    
     return message;
 }
 // Fonction pour rechercher les apprenants dans la classe spécifiée et leur envoyer le message
 void envoyerMessage(Message message) {
-    FILE *fichierEtudiants = fopen("listeClasse.txt", "r");
+    FILE *fichierEtudiants = fopen("listeEtudiants.txt", "r");
     if (fichierEtudiants == NULL) {
         printf("Erreur lors de l'ouverture du fichier des étudiants.\n");
         return;
@@ -662,7 +685,7 @@ void envoyerMessage(Message message) {
         }
         if (strcmp(classeEtudiant, message.classe) == 0) {
             // Ici vous pouvez envoyer le message à l'étudiant
-            printf("Message envoyé à %s %s de la classe %s : %s\n", prenom, nom, classeEtudiant, message.message);
+            printf("Message envoyé aux etudiants %s %s de la classe %s : %s\n", prenom, nom, classeEtudiant, message.message);
         }
     }
 
@@ -673,6 +696,187 @@ void envoyerMessage(Message message) {
 void envoyerMessageAuxApprenants() {
     Message message = saisirMessage();
     envoyerMessage(message);
+}
+
+// Fonction pour incrémenter le nombre de messages dans le fichier
+int incrementMessageCount() {
+    FILE *messageFile = fopen("messageApprenants.txt", "r+");
+    if (messageFile == NULL) {
+        printf("Erreur lors de l'ouverture du fichier des messages.\n");
+        // return;
+    }
+
+    int nbr_mess = 0;
+    fscanf(messageFile, "%d", &nbr_mess);
+    nbr_mess++;
+    
+    rewind(messageFile);
+    fprintf(messageFile, "%d", nbr_mess);
+    
+    fclose(messageFile);
+    return nbr_mess;
+}
+
+// //////////liste cumul retard /////////
+
+
+// Structure pour stocker les retards et les absences par jour
+
+
+void genererListeRetardsParJour() {
+    FILE *fichierPresence = fopen("liste_presence.txt", "r");
+    if (fichierPresence == NULL) {
+        printf("Erreur lors de l'ouverture du fichier de présence.\n");
+        return;
+    }
+
+    RetardParJour retardsParJour[TAILLE_MAX];
+    int nombreRetardsParJour = 0;
+
+    char ligne[TAILLE_MAX];
+    while (fgets(ligne, sizeof(ligne), fichierPresence) != NULL) {
+        int code;
+        char nom[TAILLE_MAX];
+        char prenom[TAILLE_MAX];
+        char date[TAILLE_MAX];
+
+        if (sscanf(ligne, "%d %s %s %s ", &code, prenom, nom, date) != 4) {
+            continue;
+        }
+
+        // Récupération de la date uniquement (sans l'heure)
+        char dateSansHeure[TAILLE_MAX];
+        strncpy(dateSansHeure, date, 10);
+        dateSansHeure[10] = '\0';
+
+        // Recherche de la date et du nom dans le tableau des retards par jour
+        int found = 0;
+        for (int i = 0; i < nombreRetardsParJour; i++) {
+            if (strcmp(retardsParJour[i].date, dateSansHeure) == 0 && strcmp(retardsParJour[i].nom, nom) == 0) {
+                found = 1;
+                // Si la date et le nom sont trouvés, ajoutez les retards à la valeur existante
+                struct tm tempsPresence;
+                memset(&tempsPresence, 0, sizeof(struct tm));
+                if (sscanf(date, "%d-%d-%d", &tempsPresence.tm_year, &tempsPresence.tm_mon, &tempsPresence.tm_mday) != 3) {
+                    printf("Erreur lors de la conversion du temps.\n");
+                    continue;
+                }
+                tempsPresence.tm_year -= 1900; // L'année doit être relative à 1900
+                tempsPresence.tm_mon -= 1;     // Le mois doit être relatif à 0 (0 pour janvier, 1 pour février, etc.)
+                if (tempsPresence.tm_hour > 8 || (tempsPresence.tm_hour == 8 && tempsPresence.tm_min > 0)) {
+                    int retards = (tempsPresence.tm_hour - 8) * 60 + tempsPresence.tm_min;
+                    retardsParJour[i].retards += retards;
+                } else {
+                    // retardsParJour[i].absences += 480; // 8 heures d'absence (8 * 60 = 480 minutes)
+                }
+                break;
+            }
+        }
+
+        // Si la date et le nom ne sont pas trouvés, ajoutez-les au tableau
+        if (!found) {
+            strcpy(retardsParJour[nombreRetardsParJour].date, dateSansHeure);
+            strcpy(retardsParJour[nombreRetardsParJour].nom, nom);
+            struct tm tempsPresence;
+            memset(&tempsPresence, 0, sizeof(struct tm));
+            if (sscanf(date, "%d-%d-%d", &tempsPresence.tm_year, &tempsPresence.tm_mon, &tempsPresence.tm_mday) != 3) {
+                printf("Erreur lors de la conversion du temps.\n");
+                continue;
+            }
+            tempsPresence.tm_year -= 1900; // L'année doit être relative à 1900
+            tempsPresence.tm_mon -= 1;     // Le mois doit être relatif à 0 (0 pour janvier, 1 pour février, etc.)
+            if (tempsPresence.tm_hour > 8 || (tempsPresence.tm_hour == 8 && tempsPresence.tm_min > 0)) {
+                retardsParJour[nombreRetardsParJour].retards = (tempsPresence.tm_hour - 8) * 60 + tempsPresence.tm_min;
+                retardsParJour[nombreRetardsParJour].absences = 0;
+            } else {
+                retardsParJour[nombreRetardsParJour].retards = 0;
+                retardsParJour[nombreRetardsParJour].absences = 480; // 8 heures d'absence (8 * 60 = 480 minutes)
+            }
+            nombreRetardsParJour++;
+        }
+    }
+
+    fclose(fichierPresence);
+
+    // Enregistrement des données dans un fichier de sortie
+    FILE *fichierSortie = fopen("liste_retards_et_absences_par_jour.txt", "w");
+    if (fichierSortie == NULL) {
+        printf("Erreur lors de la création du fichier de sortie.\n");
+        return;
+    }
+
+    fprintf(fichierSortie, "Date\t\t\tNom\t\t\tRetards (minutes)\tAbsences (minutes)\n");
+    for (int i = 0; i < nombreRetardsParJour; i++) {
+        fprintf(fichierSortie, "%s\t\t%s\t\t%d\t\t\t%d\n", retardsParJour[i].date, retardsParJour[i].nom, retardsParJour[i].retards, retardsParJour[i].absences);
+    }
+
+    fclose(fichierSortie);
+
+    printf("Le fichier liste_retards_et_absences_par_jour.txt a été généré avec succès.\n");
+}
+
+// Fontion pour liste absence
+
+void genererListeAbsences() {
+    FILE *fichierPresence = fopen("liste_presence.txt", "r");
+    if (fichierPresence == NULL) {
+        printf("Erreur lors de l'ouverture du fichier de présence.\n");
+        return;
+    }
+
+    Absence absences[TAILLE_MAX];
+    int nombreAbsences = 0;
+
+    char ligne[TAILLE_MAX];
+    while (fgets(ligne, sizeof(ligne), fichierPresence) != NULL) {
+        int code;
+        char nom[TAILLE_MAX];
+        char prenom[TAILLE_MAX];
+        char date[TAILLE_MAX];
+
+        if (sscanf(ligne, "%d %s %s %s", &code, prenom, nom, date) != 4) {
+            continue;
+        }
+
+        // Récupération de la date uniquement (sans l'heure)
+        char dateSansHeure[TAILLE_MAX];
+        strncpy(dateSansHeure, date, 10);
+        dateSansHeure[10] = '\0';
+
+        // Vérification si l'étudiant est absent
+        int present = 0;
+        for (int i = 0; i < nombreAbsences; i++) {
+            if (strcmp(absences[i].date, dateSansHeure) == 0 && strcmp(absences[i].nom, nom) == 0) {
+                present = 1;
+                break;
+            }
+        }
+
+        // Si l'étudiant est absent, ajoutez-le à la liste des absences
+        if (!present) {
+            strcpy(absences[nombreAbsences].date, dateSansHeure);
+            strcpy(absences[nombreAbsences].nom, nom);
+            nombreAbsences++;
+        }
+    }
+
+    fclose(fichierPresence);
+
+    // Enregistrement des données dans un fichier de sortie
+    FILE *fichierSortie = fopen("liste_absences.txt", "w");
+    if (fichierSortie == NULL) {
+        printf("Erreur lors de la création du fichier de sortie.\n");
+        return;
+    }
+
+    fprintf(fichierSortie, "Date\t\t\tNom\n");
+    for (int i = 0; i < nombreAbsences; i++) {
+        fprintf(fichierSortie, "%s\t\t%s\n", absences[i].date, absences[i].nom);
+    }
+
+    fclose(fichierSortie);
+
+    printf("Le fichier liste_absences.txt a été généré avec succès.\n");
 }
 
 
@@ -688,14 +892,18 @@ void gestionMenu()
         {
             do
             {
-                choix=afficheMenuApprenant();
+                int nbr_mess;
+
+                choix=afficheMenuApprenant(incrementMessageCount(nbr_mess));
                 if(choix==1)
                 {
                     marquerPresenceApprenant();
                 }
                 if (choix==3)
                 {
+                    incrementMessageCount(0);
                     lireMessageApprenants();
+                    
                 }
                 
             }while(choix!=4);
@@ -706,6 +914,17 @@ void gestionMenu()
             do
             {
                 choix=afficheMenuAdmin();
+                if (choix==1)
+                {
+                     genererListeRetardsParJour();
+                     
+                }
+                if (choix==5)
+                {
+                    genererListeAbsences();
+                }
+                
+                
                 if(choix==3)
                 {
                     marquerPresenceAdmin();
@@ -738,6 +957,8 @@ void gestionMenu()
                     
                     
                 }
+
+                
                 
             }while(choix!=5);
             

@@ -3,6 +3,8 @@
 #define TAILLE_MAX 100
 #define MAX_ETUDIANTS 100
 #define MAX_CLASS_LENGTH 20
+#define CODE_MAX_LENGTH 100
+#define MAX_CODE_LENGTH 100
 
 //premier livrable
 
@@ -24,9 +26,27 @@ typedef struct {
     int code;
     char prenom[TAILLE_MAX];
     char nom[TAILLE_MAX];
-    char classe[TAILLE_MAX]; // Ajout du membre classe
+    char classe[TAILLE_MAX]; 
     char date[TAILLE_MAX];
 } Presence;
+
+// Structure pour stocker les retards par jour
+// typedef struct {
+//     char date[TAILLE_MAX];
+//     int retards;
+// } RetardParJour;
+
+typedef struct {
+    char date[TAILLE_MAX];
+    char nom[TAILLE_MAX];
+} Absence;
+
+typedef struct {
+    char date[TAILLE_MAX];
+    char nom[TAILLE_MAX];
+    int retards;
+    int absences;
+} RetardParJour;
 
 typedef struct {
     char classe[MAX_CLASS_LENGTH];
@@ -35,7 +55,6 @@ typedef struct {
 
 
 
-//prototype
 int afficheMenuAdmin();
 int afficheMenuApprenant();
 int authentification();
@@ -43,7 +62,6 @@ int verifierLoginMdp(const char* Fichier, const char* loginSaisi, const char* md
 void marquerPresenceAdmin();
 int verifierPresenceId(int id, const char *nomFichier);
 void marquerPresenceApprenant();
-//int sousMenuAdmin(int c);
 void sousMenuApprenant(int c);
 char continuer();
 void genererFichierListePresenceOrganise();
@@ -61,5 +79,7 @@ int sousMenuMessage();
 Message saisirMessage() ;
 void envoyerMessage(Message message);
 void envoyerMessageAuxApprenants();
-
+void genererListeRetardsParJour();
+void genererListeAbsences();
+// void envoyerMessageApprenantsSpecifiques(const char *auteur);
 #endif 
