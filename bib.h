@@ -20,6 +20,7 @@
     char nom[TAILLE_MAX];
     char prenom[TAILLE_MAX];
     int code;
+    char classe[MAX_CLASS_LENGTH];
 } Etudiant;
 
 typedef struct {
@@ -28,31 +29,50 @@ typedef struct {
     char nom[TAILLE_MAX];
     char classe[TAILLE_MAX]; 
     char date[TAILLE_MAX];
+    char heure[TAILLE_MAX];
 } Presence;
 
-// Structure pour stocker les retards par jour
-// typedef struct {
-//     char date[TAILLE_MAX];
-//     int retards;
-// } RetardParJour;
+
 
 typedef struct {
     char date[TAILLE_MAX];
     char nom[TAILLE_MAX];
 } Absence;
 
-typedef struct {
-    char date[TAILLE_MAX];
-    char nom[TAILLE_MAX];
-    int retards;
-    int absences;
-} RetardParJour;
+typedef struct{
+    int id;
+    char date_presence[30];
+    char heure_presence[10];
+    char code[30];
+    char nom[30];
+    char prenom[50];
+    char classe[10];
+    int nbMinutesRetard;
+}Retard;
 
 typedef struct {
+    int code;
     char classe[MAX_CLASS_LENGTH];
     char message[TAILLE_MAX];
 } Message;
+typedef struct
+{
+    int j, m, a;
+} Date;
+typedef struct
+{
+    int h, m, s;
+} Heure;
 
+// typedef struct
+// {
+//     int id;
+//     char contenue[200];
+//     Etudiant dest;
+//     Date date;
+//     Heure heure;
+//     int status;
+// } Message;
 
 
 int afficheMenuAdmin();
@@ -79,7 +99,8 @@ int sousMenuMessage();
 Message saisirMessage() ;
 void envoyerMessage(Message message);
 void envoyerMessageAuxApprenants();
-void genererListeRetardsParJour();
+void fileOfMinutesOfRetardOfStudents();
+int nbMinuteRetardOfConnectedUser(char *code);
 void genererListeAbsences();
-// void envoyerMessageApprenantsSpecifiques(const char *auteur);
+// void messageToAllStudents();
 #endif 
